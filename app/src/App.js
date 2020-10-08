@@ -1,26 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react';
+import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import './App.css';
+import SearchForm from './components/SearchForm';
+import { fetchPokemon } from './actions';
+import { connect } from 'react-redux';
 
-function App() {
+function App(props) {
+  const { fetchPokemon } = props;
+  const [url, setUrl] = useState('https://pokeapi.co/api/v2/pokemon/');
+  useEffect(() => {
+    props.fetchPokemon(url);
+  }, [fetchPokemon, url]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Pokemon</h1>
+      <SearchForm setUrl={setUrl} />
+      {props.pokemon.map((item) => (
+        <h1 key={item.id}>{item.name}</h1>
+      ))}
     </div>
   );
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  return {
+    pokemon: state.pokemon,
+  };
+};
+
+export default connect(mapStateToProps, { fetchPokemon })(App);
